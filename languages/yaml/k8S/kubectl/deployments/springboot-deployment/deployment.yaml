@@ -1,0 +1,42 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: springboot-minikube-service
+  labels:
+    app: springboot-minikube-deployment
+    #environment: prod
+    version: blue
+spec:
+  selector:
+    app: springboot-minikube-service
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-minikube-deployment
+spec:
+  selector:
+    matchLabels:
+      app: springboot-minikube-deployment
+      tier: backend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: springboot-minikube-deployment
+        tier: backend
+        #environment: prod
+        version: blue
+    spec:
+      containers:
+        - name: springboot-minikube-container
+          image: springboot-minikube-image:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080

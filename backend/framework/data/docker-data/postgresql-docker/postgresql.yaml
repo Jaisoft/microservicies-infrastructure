@@ -1,0 +1,30 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    networks:
+      - postgresnetwork
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=user
+      - POSTGRES_DB=postgres_db
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    networks:
+      - postgresnetwork
+    depends_on: 
+      - db
+    ports:
+      - 8080:8080
+networks:
+  postgresnetwork:
+    driver: bridge

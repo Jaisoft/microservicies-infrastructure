@@ -1,0 +1,23 @@
+
+cat cdktf.json
+
+{
+  "language": "typescript",
+  "app": "npx ts-node main.ts",
+  "projectId": "4e5cc386-072f-4bcb-a76f-caec79559d80",
+  "sendCrashReports": "true",
+  "terraformProviders": ["hashicorp/aws@~>5.0"],
+  "terraformModules": [
+    {
+      "name": "vpc",
+      "source": "terraform-aws-modules/vpc/aws",
+      "version": "~> 5.0"
+    }
+  ],
+  "context": {
+
+  }
+}
+
+
+cdktf get

@@ -1,0 +1,33 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - echo "install step"
+      - node --version
+  pre_build:
+    commands:
+      - echo "pre_build step"
+      #- npm install cdktf-cli@0.19.0
+      - npm install -g ts-node@10.9.1
+      - npm install -g typescript@4.6.2
+      - npm install -g cdktf-cli
+      - curl -s -qL -o terraform_install.zip https://releases.hashicorp.com/terraform/1.6.2/terraform_1.6.2_linux_amd64.zip
+      - unzip terraform_install.zip -d /usr/bin/
+      - chmod +x /usr/bin/terraform
+    finally:
+      - terraform --version
+  build:
+    commands:
+      - echo "build command"
+      - cdktf --version
+      - npm install
+      - cdktf deploy --var-file=frontend-infrastructure.tfvars
+#deploy --auto-approve
+  post_build:
+    commands:
+      - echo "post_build step"
+artifacts:
+  files:
+    - '**/*'

@@ -1,0 +1,57 @@
+- name: setup Mysql with medium_db db and remote login
+  become: true
+  hosts: mysql-ec2-user
+  remote_user: ec2-user
+  tasks:
+    - name: installing rpm repo
+      shell: sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-7.noarch.rpm
+      ignore_errors: yes
+    - name: installing rpm 
+      package: 
+        name={{ item }} 
+        state=present
+      with_items:
+        - mysql-community-server
+        - mysql
+    - name: Make sure pymysql is present
+      become: true
+      pip:
+        name: PyMySQL
+        state: present
+    - name: install crypto
+      become: true
+      pip:
+        name: cryptography
+        state: present 
+    - name: start and enable mysql service
+      service:
+        name: mysqld
+        state: started
+        enabled: yes
+    - name: creating mysql user
+      mysql_user:
+        name: bob
+        password: 12345
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqlx.sock
+    - name: creating medium_db 
+      mysql_db:
+        name: "{{db_name}}"
+        state: present
+    - name: Enable remote login to mysql
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+        backup: yes
+      notify:
+        - Restart mysql  
+    - name: Enable remote login to mysql
+      ansible.builtin.script: hello.sh
+  handlers:
+    - name: Restart mysql
+      service:
+        name: mysqld
+        state: restarted
+        enabled: true

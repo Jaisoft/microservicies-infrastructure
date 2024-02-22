@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            nodejs: 12
+        commands:
+            - echo Installing source NPM dependencies...
+            - npm install -g @angular/cli@10.1.5
+            - npm install
+    build:
+        commands:
+            - echo Build started for ${BUILD_ENV} on `date`
+            - npm run build:${BUILD_ENV}
+            - echo Build completed...
+    post_build:
+        commands:
+            - echo Pre-Build started on `date`
+            - aws s3 cp ./dist/APPLICATION_NAME s3://${BUCKET_NAME} --recursive --acl public-read
+            - echo Pre-Build completed on `date`
+artifacts:
+    files:
+        - dist/APPLICATION_NAME/**/*
+    discard-paths: yes
